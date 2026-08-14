@@ -1,0 +1,35 @@
+{
+    "name": "tinigin/laravel-cart",
+    "description": "Laravel Cart is a customizable package for adding shopping cart functionality to Laravel applications",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "homepage": "https://github.com/tinigin/laravel-cart",
+    "authors": [
+        {
+            "name": "Dmitrii Tinigin",
+            "email": "dmitrii@tinigin.ru",
+            "role": "author",
+            "homepage": "https://github.com/tinigin"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tinigin\\LaravelCart\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": ">=9.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tinigin\\LaravelCart\\Providers\\LaravelCartServiceProvider"
+            ],
+            "aliases": {
+                "Cart": "Tinigin\\LaravelCart\\Facades\\Cart"
+            }
+        }
+    }
+}
