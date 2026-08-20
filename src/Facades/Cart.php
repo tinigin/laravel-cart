@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static float total()
  * @method static void add(int $id, int $quantity = 1, string $type = 'product', array $extra = [])
  * @method static void remove(int $id)
+ * @method static void has(int $id)
+ * @method static void get(int $id)
  * @method static void clear()
  * @method static string cartId()
  * @method static void setCookieOnResponse($response)

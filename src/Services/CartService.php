@@ -95,6 +95,18 @@ class CartService
         return $this->storage->getItems($cart['cart_id']);
     }
 
+    public function has(int $id): bool
+    {
+        $cart = $this->getOrCreate();
+        return $this->storage->hasItem($cart['cart_id'], $id);
+    }
+
+    public function get(int $id): array
+    {
+        $cart = $this->getOrCreate();
+        return $this->storage->getItem($cart['cart_id'], $id);
+    }
+
     public function total(): float
     {
         $cart = $this->getOrCreate();

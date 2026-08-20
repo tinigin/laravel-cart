@@ -50,6 +50,40 @@ class SessionCartStorage implements CartStorageInterface
         return $carts[$cartId]['items'] ?? [];
     }
 
+    public function hasItem(string $cartId, int $id): bool
+    {
+        $carts = Session::get($this->sessionKey, []);
+
+        if (!isset($carts[$cartId])) {
+            $this->getOrCreate($cartId);
+            $carts = Session::get($this->sessionKey, []);
+        }
+
+        $items = $carts[$cartId]['items'] ?? [];
+        $existing = collect($items)->firstWhere('id', $id);
+
+        if ($existing) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getItem(string $cartId, int $id): array
+    {
+        $carts = Session::get($this->sessionKey, []);
+
+        if (!isset($carts[$cartId])) {
+            $this->getOrCreate($cartId);
+            $carts = Session::get($this->sessionKey, []);
+        }
+
+        $items = $carts[$cartId]['items'] ?? [];
+        $existing = collect($items)->firstWhere('id', $id);
+
+        return $existing ?? [];
+    }
+
     public function addItem(string $cartId, array $item): void
     {
         $carts = Session::get($this->sessionKey, []);

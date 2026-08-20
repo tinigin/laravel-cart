@@ -36,6 +36,28 @@ class DatabaseCartStorage implements CartStorageInterface
         return $cart?->items ?? [];
     }
 
+    public function hasItem(string $cartId, int $id): bool
+    {
+        $cart = Cart::where('cart_id', $cartId)->firstOrFail();
+        $items = $cart->items ?? [];
+
+        $existing = collect($items)->firstWhere('id', $id);
+        if ($existing) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getItem(string $cartId, int $id): array
+    {
+        $cart = Cart::where('cart_id', $cartId)->firstOrFail();
+        $items = $cart->items ?? [];
+
+        $existing = collect($items)->firstWhere('id', $id);
+        return $existing ?? [];
+    }
+
     public function addItem(string $cartId, array $item): void
     {
         $cart = Cart::where('cart_id', $cartId)->firstOrFail();
