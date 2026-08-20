@@ -18,14 +18,18 @@ class CartServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-    	// Publish Config
-        $this->publishes([
-            __DIR__.'/../config/cart.php' => config_path('cart.php'),
-        ], 'config');
-
-        // Publish Migrations
-		$this->publishesMigrations([
-			__DIR__.'/../src/Database/Migrations' => database_path('migrations'),
-		], 'migrations');
+		$this->loadMigrationsFrom(__DIR__.'/../src/Database/Migrations');
+		
+	    if ($this->app->runningInConsole()) {
+			// Publish Config
+			$this->publishes([
+				__DIR__.'/../config/cart.php' => config_path('cart.php'),
+			], 'config');
+	
+			// Publish Migrations
+			$this->publishesMigrations([
+				__DIR__.'/../src/Database/Migrations' => database_path('migrations'),
+			], 'migrations');
+		}
     }
 }
