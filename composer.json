@@ -25,7 +25,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tinigin\\LaravelCart\\Providers\\LaravelCartServiceProvider"
+                "Tinigin\\LaravelCart\\CartServiceProvider"
             ],
             "aliases": {
                 "Cart": "Tinigin\\LaravelCart\\Facades\\Cart"
