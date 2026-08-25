@@ -21,10 +21,18 @@ class Cart extends Model
     public function recalculateTotal(): void
     {
         $total = 0;
+        $quantity = 0;
+        $metadata = $this->metadata ?? [];
+
         foreach ($this->items as $item) {
             $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
+            $quantity += $item['quantity'] ?? 0;
         }
-        $this->metadata['total'] = $total;
+
+        $metadata['total'] = $total;
+        $metadata['quantity'] = $quantity;
+
+        $this->metadata = $metadata;
     }
 
     public function extendExpiry(int $minutes): void

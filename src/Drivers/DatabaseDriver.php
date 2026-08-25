@@ -71,9 +71,9 @@ class DatabaseDriver implements CartDriver
         DB::transaction(function () use ($cart, $item) {
             $items = $cart->items;
             $found = false;
-            foreach ($items as &$existing) {
+            foreach ($items as $key => $existing) {
                 if ($existing['id'] == $item['id']) {
-                    $existing['quantity'] += $item['quantity'] ?? 1;
+                    $items[$key]['quantity'] += $item['quantity'] ?? 1;
                     $found = true;
                     break;
                 }
@@ -88,6 +88,19 @@ class DatabaseDriver implements CartDriver
         $this->cachedCart = null;
     }
 
+    public function getItem(string $cartId, string $itemId): ?array
+    {
+        $cart = $this->getCartModel($cartId);
+
+        foreach ($cart->items as $item) {
+            if ($item['id'] == $itemId) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
     public function removeItem(string $cartId, string $itemId): void
     {
         $cart = $this->getCartModel($cartId);
@@ -100,16 +113,18 @@ class DatabaseDriver implements CartDriver
         $this->cachedCart = null;
     }
 
-    public function updateItem(string $cartId, string $itemId, int $quantity): void
+    public function updateItem(string $cartId, string $itemId, int|float $quantity): void
     {
         $cart = $this->getCartModel($cartId);
         DB::transaction(function () use ($cart, $itemId, $quantity) {
-            foreach ($cart->items as &$item) {
+            $items = $cart->items;
+            foreach ($items as $key => $item) {
                 if ($item['id'] == $itemId) {
-                    $item['quantity'] = $quantity;
+                    $items[$key]['quantity'] = $quantity;
                     break;
                 }
             }
+            $cart->items = $items;
             $cart->recalculateTotal();
             $cart->save();
         });

@@ -58,7 +58,7 @@ class CartManager
         $this->driver->removeItem($this->cartId, $itemId);
     }
 
-    public function update(string $itemId, int $quantity): void
+    public function update(string $itemId, int|float $quantity): void
     {
         $this->driver->updateItem($this->cartId, $itemId, $quantity);
     }
@@ -71,6 +71,11 @@ class CartManager
     public function has(string $itemId): bool
     {
         return $this->driver->hasItem($this->cartId, $itemId);
+    }
+
+    public function get(string $itemId): array
+    {
+        return $this->driver->getItem($this->cartId, $itemId);
     }
 
     public function total(): float

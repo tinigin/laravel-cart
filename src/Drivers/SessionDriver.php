@@ -29,9 +29,9 @@ class SessionDriver implements CartDriver
     {
         $items = $this->get($cartId);
         $found = false;
-        foreach ($items as &$existing) {
+        foreach ($items as $key => $existing) {
             if ($existing['id'] == $item['id']) {
-                $existing['quantity'] += $item['quantity'] ?? 1;
+                $items[$key]['quantity'] += $item['quantity'] ?? 1;
                 $found = true;
                 break;
             }
@@ -43,6 +43,17 @@ class SessionDriver implements CartDriver
         $this->updateTotal($cartId);
     }
 
+    public function getItem(string $cartId, string $itemId): ?array
+    {
+        $items = $this->get($cartId);
+        foreach ($items as $item) {
+            if ($item['id'] == $itemId) {
+                return $item;
+            }
+        }
+        return null;
+    }
+
     public function removeItem(string $cartId, string $itemId): void
     {
         $items = $this->get($cartId);
@@ -51,12 +62,12 @@ class SessionDriver implements CartDriver
         $this->updateTotal($cartId);
     }
 
-    public function updateItem(string $cartId, string $itemId, int $quantity): void
+    public function updateItem(string $cartId, string $itemId, int|float $quantity): void
     {
         $items = $this->get($cartId);
-        foreach ($items as &$item) {
+        foreach ($items as $key => $item) {
             if ($item['id'] == $itemId) {
-                $item['quantity'] = $quantity;
+                $items[$key]['quantity'] = $quantity;
                 break;
             }
         }
@@ -96,11 +107,13 @@ class SessionDriver implements CartDriver
     {
         $items = $this->get($cartId);
         $total = array_sum(array_map(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 0), $items));
+        $quantity = array_sum(array_map(fn($item) => $item['quantity'] ?? 0, $items));
         $metadata = Session::get("cart_metadata_{$cartId}", [
             'total'      => 0,
             'quantity'   => 0,
         ]);
         $metadata['total'] = $total;
+        $metadata['quantity'] = $quantity;
         Session::put("cart_metadata_{$cartId}", $metadata);
     }
 }

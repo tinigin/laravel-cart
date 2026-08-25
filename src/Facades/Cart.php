@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static array getItems()
  * @method static void add(array $item)
+ * @method static array get(string $itemId)
  * @method static void remove(string $itemId)
  * @method static void update(string $itemId, int $quantity)
  * @method static void clear()
