@@ -3,33 +3,39 @@
 namespace Tinigin\LaravelCart;
 
 use Illuminate\Support\ServiceProvider;
-use Tinigin\LaravelCart\Services\CartService;
+use Illuminate\Support\Facades\Log;
+use Tinigin\LaravelCart\Drivers\DatabaseDriver;
+use Tinigin\LaravelCart\Drivers\SessionDriver;
+use Tinigin\LaravelCart\Managers\CartManager;
 
 class CartServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
     	$this->mergeConfigFrom(__DIR__.'/../config/cart.php', 'cart');
-		
-        // Use 'scoped' instead of 'singleton' for Octane compatibility
-        // This ensures a new CartService instance per request, preventing state pollution
-        $this->app->scoped('laravel-cart', fn () => new CartService());
+
+        $this->app->scoped(CartManager::class, function ($app) {
+            Log::channel('stack')->info('Cart driver: ' . config('cart.driver'));
+            $driver = config('cart.driver', 'database');
+            $driverInstance = match ($driver) {
+                'database' => new DatabaseDriver(),
+                'session'  => new SessionDriver(),
+                default    => throw new \InvalidArgumentException("Unsupported cart driver: $driver"),
+            };
+            return new CartManager($driverInstance);
+        });
+
+        $this->app->alias(CartManager::class, 'laravel-cart');
     }
 
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../src/Database/Migrations');
-
         if ($this->app->runningInConsole()) {
-            // Publish Config
             $this->publishes([
-                __DIR__.'/../config/cart.php' => config_path('cart.php'),
+                __DIR__ . '/../config/cart.php' => config_path('cart.php'),
             ], 'config');
 
-            // Publish Migrations
-            $this->publishesMigrations([
-                __DIR__.'/../src/Database/Migrations' => database_path('migrations'),
-            ], 'migrations');
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
     }
 }

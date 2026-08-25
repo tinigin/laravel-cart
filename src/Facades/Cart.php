@@ -5,22 +5,20 @@ namespace Tinigin\LaravelCart\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \Tinigin\LaravelCart\Services\CartService instance()
- * @method static array items()
- * @method static float total()
- * @method static void add(int $id, int $quantity = 1, string $type = 'product', array $extra = [])
- * @method static void remove(int $id)
- * @method static void has(int $id)
- * @method static void get(int $id)
+ * @method static array getItems()
+ * @method static void add(array $item)
+ * @method static void remove(string $itemId)
+ * @method static void update(string $itemId, int $quantity)
  * @method static void clear()
- * @method static string cartId()
- * @method static void setCookieOnResponse($response)
+ * @method static bool has(string $itemId)
+ * @method static float total()
+ * @method static int count()
+ * @method static bool isEmpty()
  */
 class Cart extends Facade
 {
-    protected static function getFacadeAccessor(): string
+    protected static function getFacadeAccessor()
     {
         return 'laravel-cart';
     }
 }
-

@@ -14,10 +14,7 @@ return new class extends Migration
             $table->json('items')->default('[]');
             $table->json('metadata')->default(json_encode([
                 'total' => 0,
-                'currency' => 'RUB',
-                'promo_code' => null,
-                'unit' => 'PCE',
-                'step' => 1
+                'quantity' => 0
             ]));
             $table->foreignId('user_id')->nullable()->index();
             $table->timestamp('expires_at')->nullable();

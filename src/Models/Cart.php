@@ -3,26 +3,33 @@
 namespace Tinigin\LaravelCart\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class Cart extends Model
 {
+    protected $table = 'carts';
+
     protected $fillable = [
-        'cart_id',
-        'items',
-        'metadata',
-        'user_id',
-        'expires_at',
+        'cart_id', 'items', 'metadata', 'user_id', 'expires_at'
     ];
 
     protected $casts = [
         'items' => 'array',
         'metadata' => 'array',
+        'expires_at' => 'datetime',
     ];
 
-    public static function generateCartId(): string
+    public function recalculateTotal(): void
     {
-        return Str::uuid()->toString();
+        $total = 0;
+        foreach ($this->items as $item) {
+            $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
+        }
+        $this->metadata['total'] = $total;
+    }
+
+    public function extendExpiry(int $minutes): void
+    {
+        $this->expires_at = now()->addMinutes($minutes);
+        $this->save();
     }
 }
