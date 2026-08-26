@@ -14,4 +14,5 @@ interface CartDriver
     public function exists(string $cartId): bool;
     public function hasItem(string $cartId, string $itemId): bool;
     public function total(string $cartId): float;
+    public function getAllIds(string $cartId): array;
 }

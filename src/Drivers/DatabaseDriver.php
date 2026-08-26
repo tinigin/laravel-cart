@@ -33,7 +33,6 @@ class DatabaseDriver implements CartDriver
                 'cart_id'   => $cartId,
                 'items'     => [],
                 'metadata'  => [
-                    'total'      => 0,
                     'quantity'   => 0,
                 ],
                 'user_id'   => Auth::check() ? Auth::id() : null,
@@ -82,7 +81,6 @@ class DatabaseDriver implements CartDriver
                 $items[] = $item;
             }
             $cart->items = $items;
-            $cart->recalculateTotal();
             $cart->save();
         });
         $this->cachedCart = null;
@@ -107,7 +105,6 @@ class DatabaseDriver implements CartDriver
         DB::transaction(function () use ($cart, $itemId) {
             $items = array_filter($cart->items, fn($item) => $item['id'] != $itemId);
             $cart->items = array_values($items);
-            $cart->recalculateTotal();
             $cart->save();
         });
         $this->cachedCart = null;
@@ -125,7 +122,6 @@ class DatabaseDriver implements CartDriver
                 }
             }
             $cart->items = $items;
-            $cart->recalculateTotal();
             $cart->save();
         });
         $this->cachedCart = null;
@@ -136,7 +132,7 @@ class DatabaseDriver implements CartDriver
         $cart = $this->getCartModel($cartId);
         DB::transaction(function () use ($cart) {
             $cart->items = [];
-            $cart->metadata['total'] = 0;
+            $cart->metadata = [];
             $cart->save();
         });
         $this->cachedCart = null;
@@ -162,5 +158,25 @@ class DatabaseDriver implements CartDriver
     {
         $cart = $this->getCartModel($cartId);
         return $cart->metadata['total'] ?? 0;
+    }
+
+    public function getAllIds(string $cartId): array
+    {
+        $ids = [];
+
+        $items = $this->get($cartId);
+        if ($items) {
+            foreach ($items as $item) {
+                if (isset($item['type']) && $item['type'] == 'set') {
+                    foreach ($item['items'] as $p) {
+                        $ids[] = $p['id'];
+                    }
+                } else {
+                    $ids[] = $item['id'];
+                }
+            }
+        }
+
+        return $ids;
     }
 }

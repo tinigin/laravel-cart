@@ -48,6 +48,11 @@ class CartManager
         return $this->driver->get($this->cartId);
     }
 
+    public function getAllIds(): array
+    {
+        return $this->driver->getAllIds($this->cartId);
+    }
+
     public function add(array $item): void
     {
         $this->driver->addItem($this->cartId, $item);
@@ -73,7 +78,7 @@ class CartManager
         return $this->driver->hasItem($this->cartId, $itemId);
     }
 
-    public function get(string $itemId): array
+    public function get(string $itemId): ?array
     {
         return $this->driver->getItem($this->cartId, $itemId);
     }

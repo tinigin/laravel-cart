@@ -13,7 +13,6 @@ return new class extends Migration
             $table->uuid('cart_id')->unique()->index();
             $table->json('items')->default('[]');
             $table->json('metadata')->default(json_encode([
-                'total' => 0,
                 'quantity' => 0
             ]));
             $table->foreignId('user_id')->nullable()->index();

@@ -19,7 +19,6 @@ class SessionDriver implements CartDriver
         return (object) [
             'items' => $data,
             'metadata' => Session::get("cart_metadata_{$cartId}", [
-                'total'      => 0,
                 'quantity'   => 0,
             ]),
         ];
@@ -40,7 +39,6 @@ class SessionDriver implements CartDriver
             $items[] = $item;
         }
         Session::put("cart_{$cartId}", $items);
-        $this->updateTotal($cartId);
     }
 
     public function getItem(string $cartId, string $itemId): ?array
@@ -59,7 +57,6 @@ class SessionDriver implements CartDriver
         $items = $this->get($cartId);
         $items = array_filter($items, fn($item) => $item['id'] != $itemId);
         Session::put("cart_{$cartId}", array_values($items));
-        $this->updateTotal($cartId);
     }
 
     public function updateItem(string $cartId, string $itemId, int|float $quantity): void
@@ -72,7 +69,6 @@ class SessionDriver implements CartDriver
             }
         }
         Session::put("cart_{$cartId}", $items);
-        $this->updateTotal($cartId);
     }
 
     public function clear(string $cartId): void
@@ -103,17 +99,23 @@ class SessionDriver implements CartDriver
         return $metadata['total'];
     }
 
-    protected function updateTotal(string $cartId): void
+    public function getAllIds(string $cartId): array
     {
+        $ids = [];
+
         $items = $this->get($cartId);
-        $total = array_sum(array_map(fn($item) => ($item['price'] ?? 0) * ($item['quantity'] ?? 0), $items));
-        $quantity = array_sum(array_map(fn($item) => $item['quantity'] ?? 0, $items));
-        $metadata = Session::get("cart_metadata_{$cartId}", [
-            'total'      => 0,
-            'quantity'   => 0,
-        ]);
-        $metadata['total'] = $total;
-        $metadata['quantity'] = $quantity;
-        Session::put("cart_metadata_{$cartId}", $metadata);
+        if ($items) {
+            foreach ($items as $item) {
+                if (isset($item['type']) && $item['type'] == 'set') {
+                    foreach ($item['items'] as $p) {
+                        $ids[] = $p['id'];
+                    }
+                } else {
+                    $ids[] = $item['id'];
+                }
+            }
+        }
+
+        return $ids;
     }
 }

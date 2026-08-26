@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static float total()
  * @method static int count()
  * @method static bool isEmpty()
+ * @method static array getAllIds()
  */
 class Cart extends Facade
 {
