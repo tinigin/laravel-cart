@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Tinigin\LaravelCart\Drivers\DatabaseDriver;
 use Tinigin\LaravelCart\Drivers\SessionDriver;
 use Tinigin\LaravelCart\Managers\CartManager;
+use Tinigin\LaravelCart\Console\Commands\CleanCarts;
 
 class CartServiceProvider extends ServiceProvider
 {
@@ -36,6 +37,10 @@ class CartServiceProvider extends ServiceProvider
             ], 'config');
 
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
+            $this->commands([
+                CleanCarts::class,
+            ]);
         }
     }
 }
